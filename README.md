@@ -1,7 +1,7 @@
 
 # READ THIS #
 
-- [To-Do List](#-the-always-to-do-checklist)
+- [To-Do List](#to-do-list-everytime-copy-it-locally)
 - [Just Read](#env-thing)
 - [What Changed](#what-the-other-did)
 
