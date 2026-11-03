@@ -1,8 +1,8 @@
 
 # READ THIS #
 
-- [To-Do List](#to-do-list-everytime)
-- [Just Read](#.env-thing)
+- [To-Do List](#-the-always-to-do-checklist)
+- [Just Read](#env-thing)
 - [What Changed](#what-the-other-did)
 
 
