@@ -1,8 +1,17 @@
+import SiteHeader from "@/components/SiteHeader";
+import Wordmark from "@/components/Wordmark";
+import AppTray from "@/components/AppTray";
+import { SITE } from "@/lib/apps";
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1>NxM GAWK GAWK</h1>
-      <p>Cuming soon</p>
-    </main>
+    <>
+      <SiteHeader home />
+      <main className="hero">
+        <Wordmark />
+        <p className="tagline">{SITE.tagline}</p>
+        <AppTray />
+      </main>
+    </>
   );
 }
