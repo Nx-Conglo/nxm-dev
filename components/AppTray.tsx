@@ -10,35 +10,13 @@ export default function AppTray() {
   const reduce = useReducedMotion();
   const [active, setActive] = useState<Category | null>(null);
 
-  const trayVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        delayChildren: reduce ? 0 : 2.0, // Wait for tagline to finish building
-        staggerChildren: 0.1, // Pops out one by one
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 200, // Start way below the tray
-      x: 0,
-      scale: 0.3 
-    },
+  const item = {
+    hidden: reduce ? { opacity: 1 } : { opacity: 0, y: 200, scale: 0.3 },
     show: {
       opacity: 1,
       y: 0,
-      x: 0,
       scale: 1,
-      transition: {
-        type: "spring" as const, // <--- THIS FIXES THE TYPESCRIPT ERROR
-        stiffness: 250,
-        damping: 15,
-        mass: 1,
-      },
+      transition: { type: "spring" as const, stiffness: 150, damping: 15 },
     },
   };
 
@@ -46,49 +24,48 @@ export default function AppTray() {
     <motion.section
       className="tray"
       aria-labelledby="tray-title"
-      initial={reduce ? false : "hidden"}
-      animate="show"
-      variants={trayVariants}
+      initial={reduce ? false : { opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: reduce ? 0 : 1.1, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
     >
       <h2 id="tray-title" className="tray-title">
-        Explore
+        Categories
       </h2>
 
-      <ul className="tray-grid">
-        {categories.map((cat) => (
-          <motion.li key={cat.slug} variants={itemVariants}>
+      <motion.ul
+        className="tray-grid"
+        initial="hidden"
+        animate="show"
+        variants={{ show: { transition: { delayChildren: reduce ? 0 : 1.4, staggerChildren: 0.08 } } }}
+      >
+        {categories.map((app) => (
+          <motion.li key={app.slug} variants={item}>
             <Link
-              href={`/apps/${cat.slug}`}
+              href={`/apps/${app.slug}`}
               className="app"
-              onMouseEnter={() => setActive(cat)}
+              onMouseEnter={() => setActive(app)}
               onMouseLeave={() => setActive(null)}
-              onFocus={() => setActive(cat)}
+              onFocus={() => setActive(app)}
               onBlur={() => setActive(null)}
             >
               <motion.span
                 className="app-icon"
-                style={{ background: `linear-gradient(145deg, ${cat.colors[0]}, ${cat.colors[1]})` }}
+                style={{ background: `linear-gradient(145deg, ${app.colors[0]}, ${app.colors[1]})` }}
                 whileHover={reduce ? undefined : { y: -8, rotate: -3, scale: 1.07 }}
                 whileTap={reduce ? undefined : { scale: 0.92 }}
                 transition={{ type: "spring", stiffness: 320, damping: 16 }}
               >
-                <AppIcon icon={cat.icon} />
+                <AppIcon icon={app.icon} />
               </motion.span>
-              <span className="app-name">{cat.name}</span>
+              <span className="app-name">{app.name}</span>
             </Link>
           </motion.li>
         ))}
-      </ul>
+      </motion.ul>
 
-      <motion.p 
-        className="tray-caption" 
-        aria-live="polite"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: reduce ? 0 : 2.8 }}
-      >
-        {active ? active.tagline : "Pick a category to see our work."}
-      </motion.p>
+      <p className="tray-caption" aria-live="polite">
+        {active ? active.tagline : "Pick an app to see what it does."}
+      </p>
     </motion.section>
   );
 }

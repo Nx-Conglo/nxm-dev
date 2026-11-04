@@ -1,51 +1,56 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 
-export default function Typewriter({ text }: { text: string }) {
+// Terminal-style typing. Fully deterministic (no Math.random), so SSR and the
+// browser always agree: the first render shows 0 characters on both sides.
+export default function Typewriter({
+  text,
+  startDelay = 900,
+  speed = 40,
+  className = "",
+}: {
+  text: string;
+  startDelay?: number;
+  speed?: number;
+  className?: string;
+}) {
   const reduce = useReducedMotion();
-  const [chars, setChars] = useState<string[]>([]);
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     if (reduce) {
-      setChars(text.split(""));
+      setCount(text.length);
       return;
     }
-
     let i = 0;
-    const timer = setInterval(() => {
-      setChars(text.slice(0, i + 1).split(""));
-      i++;
-      if (i >= text.length) clearInterval(timer);
-    }, 60); // Fast, mechanical typing speed
-
-    return () => clearInterval(timer);
-  }, [text, reduce]);
+    let timer: ReturnType<typeof setTimeout>;
+    const tick = () => {
+      i += 1;
+      setCount(i);
+      // slightly uneven rhythm, but computed from the index (not random)
+      if (i < text.length) timer = setTimeout(tick, speed + ((i * 7) % 5) * 12);
+    };
+    timer = setTimeout(tick, startDelay);
+    return () => clearTimeout(timer);
+  }, [text, startDelay, speed, reduce]);
 
   return (
-    <div className="builder-container">
-      <p className="tagline-text">
-        {chars.map((char, i) => (
-          <motion.span
-            key={i}
-            initial={{ opacity: 0, y: -4, filter: "brightness(2) drop-shadow(0 0 4px var(--sun))" }}
-            animate={{ opacity: 1, y: 0, filter: "brightness(1) drop-shadow(0 0 0px transparent)" }}
-            transition={{ duration: 0.15 }}
-            className="char"
-          >
-            {char === " " ? "\u00A0" : char}
-          </motion.span>
-        ))}
-        {/* The neon terminal cursor */}
-        {!reduce && chars.length < text.length && (
-          <motion.span
-            className="terminal-cursor"
-            animate={{ opacity: [1, 0] }}
-            transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
-          />
-        )}
-      </p>
-    </div>
+    <p className={`typewriter ${className}`}>
+      <span className="sr-only">{text}</span>
+      <span aria-hidden="true">
+        {text
+          .slice(0, count)
+          .split("")
+          .map((c, i) => (
+            <span key={i} className="tw-char">
+              {c}
+            </span>
+          ))}
+        <span className={`tw-cursor${count >= text.length ? " idle" : ""}`} />
+        <span className="tw-rest">{text.slice(count)}</span>
+      </span>
+    </p>
   );
 }
