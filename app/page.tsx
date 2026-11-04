@@ -1,6 +1,7 @@
 import SiteHeader from "@/components/SiteHeader";
 import Wordmark from "@/components/Wordmark";
 import AppTray from "@/components/AppTray";
+import Typewriter from "@/components/Typewriter";
 import { SITE } from "@/lib/apps";
 
 export default function Home() {
@@ -9,7 +10,7 @@ export default function Home() {
       <SiteHeader home />
       <main className="hero">
         <Wordmark />
-        <p className="tagline">{SITE.tagline}</p>
+        <Typewriter text={SITE.tagline} />
         <AppTray />
       </main>
     </>

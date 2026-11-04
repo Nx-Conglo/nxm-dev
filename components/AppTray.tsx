@@ -3,20 +3,42 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { apps, type App } from "@/lib/apps";
+import { categories, type Category } from "@/lib/apps";
 import AppIcon from "./AppIcon";
 
 export default function AppTray() {
   const reduce = useReducedMotion();
-  const [active, setActive] = useState<App | null>(null);
+  const [active, setActive] = useState<Category | null>(null);
 
-  const item = {
-    hidden: reduce ? { opacity: 1 } : { opacity: 0, y: 40, scale: 0.8 },
+  const trayVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        delayChildren: reduce ? 0 : 2.0, // Wait for tagline to finish building
+        staggerChildren: 0.1, // Pops out one by one
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 200, // Start way below the tray
+      x: 0,
+      scale: 0.3 
+    },
     show: {
       opacity: 1,
       y: 0,
+      x: 0,
       scale: 1,
-      transition: { type: "spring" as const, stiffness: 260, damping: 18 },
+      transition: {
+        type: "spring" as const, // <--- THIS FIXES THE TYPESCRIPT ERROR
+        stiffness: 250,
+        damping: 15,
+        mass: 1,
+      },
     },
   };
 
@@ -24,48 +46,49 @@ export default function AppTray() {
     <motion.section
       className="tray"
       aria-labelledby="tray-title"
-      initial={reduce ? false : { opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: reduce ? 0 : 1.1, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      initial={reduce ? false : "hidden"}
+      animate="show"
+      variants={trayVariants}
     >
       <h2 id="tray-title" className="tray-title">
-        Our apps
+        Explore
       </h2>
 
-      <motion.ul
-        className="tray-grid"
-        initial="hidden"
-        animate="show"
-        variants={{ show: { transition: { delayChildren: reduce ? 0 : 1.4, staggerChildren: 0.08 } } }}
-      >
-        {apps.map((app) => (
-          <motion.li key={app.slug} variants={item}>
+      <ul className="tray-grid">
+        {categories.map((cat) => (
+          <motion.li key={cat.slug} variants={itemVariants}>
             <Link
-              href={`/apps/${app.slug}`}
+              href={`/apps/${cat.slug}`}
               className="app"
-              onMouseEnter={() => setActive(app)}
+              onMouseEnter={() => setActive(cat)}
               onMouseLeave={() => setActive(null)}
-              onFocus={() => setActive(app)}
+              onFocus={() => setActive(cat)}
               onBlur={() => setActive(null)}
             >
               <motion.span
                 className="app-icon"
-                style={{ background: `linear-gradient(145deg, ${app.colors[0]}, ${app.colors[1]})` }}
+                style={{ background: `linear-gradient(145deg, ${cat.colors[0]}, ${cat.colors[1]})` }}
                 whileHover={reduce ? undefined : { y: -8, rotate: -3, scale: 1.07 }}
                 whileTap={reduce ? undefined : { scale: 0.92 }}
                 transition={{ type: "spring", stiffness: 320, damping: 16 }}
               >
-                <AppIcon icon={app.icon} />
+                <AppIcon icon={cat.icon} />
               </motion.span>
-              <span className="app-name">{app.name}</span>
+              <span className="app-name">{cat.name}</span>
             </Link>
           </motion.li>
         ))}
-      </motion.ul>
+      </ul>
 
-      <p className="tray-caption" aria-live="polite">
-        {active ? active.tagline : "Pick an app to see what it does."}
-      </p>
+      <motion.p 
+        className="tray-caption" 
+        aria-live="polite"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: reduce ? 0 : 2.8 }}
+      >
+        {active ? active.tagline : "Pick a category to see our work."}
+      </motion.p>
     </motion.section>
   );
 }
