@@ -6,8 +6,8 @@ export default function NotFound() {
     <>
       <SiteHeader />
       <main className="detail">
-        <h1 className="page-title">Page not found</h1>
-        <p className="lede">That page doesn't exist.</p>
+        <h1>Page not found</h1>
+        <p className="lede">That page doesn't exist. Head back and pick an app.</p>
         <Link href="/" className="btn">
           Back to home
         </Link>

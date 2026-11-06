@@ -10,7 +10,7 @@ import {
   type MotionValue,
 } from "framer-motion";
 
-const ACCENTS = ["#FF5C8A", "#2EE6D6", "#FFC857", "#7C5CFF", "#FF5C8A", "#2EE6D6"];
+const ACCENTS = Array(6).fill("var(--accent-ink)"); // lime in dark, deep green in light
 
 function Letter({
   char,
@@ -49,7 +49,11 @@ function Letter({
   const y = useSpring(useTransform(near, [0, 1], [0, -22]), spring);
   const scale = useSpring(useTransform(near, [0, 1], [1, 1.12]), spring);
   const rotate = useSpring(useTransform(near, [0, 1], [0, -5]), spring);
-  const color = useTransform(near, [0, 1], ["#F6F4FF", accent]);
+  // blends from the theme's text color (--fg) to this letter's accent
+  const color = useTransform(
+    near,
+    (v) => `color-mix(in srgb, ${accent} ${Math.round(v * 100)}%, var(--fg))`
+  );
 
   return (
     <motion.span

@@ -37,7 +37,7 @@ export default function AppIcon({ icon }: { icon: IconKey }) {
     <svg
       viewBox="0 0 64 64"
       fill="none"
-      stroke="#fff"
+      stroke="currentColor"
       strokeWidth="4"
       strokeLinecap="round"
       strokeLinejoin="round"

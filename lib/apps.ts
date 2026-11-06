@@ -1,43 +1,57 @@
+// ─────────────────────────────────────────────────────────────
+// ALL CONTENT LIVES HERE.
+//
+//  • categories      → the 6 icons on the home page (each links to /apps/<slug>)
+//  • appsByCategory  → the real apps/sites we've built, grouped by category slug
+//
+// To add an app: find its category slug in `appsByCategory` and add an object, e.g.
+//
+//   web: [
+//     {
+//       name: "My App",
+//       href: "https://myapp.com",
+//       logo: "/logos/myapp.png",   // optional: put the image in public/logos/
+//       colors: ["#000", "#333"],
+//       icon: "web",                // used when there is no logo
+//     },
+//   ],
+// ─────────────────────────────────────────────────────────────
+
 export const SITE = {
   name: "NxM Dev",
-  tagline: "Built for the community",
-  email: "hello@nxmdev.com",
+  tagline: "Apps, sites and tools we've built.",
+  email: "hello@nxmdev.com", // ← replace, or remove the Contact button in SiteHeader.tsx
 };
 
 export type IconKey = "web" | "mobile" | "design" | "cloud" | "ai" | "care";
 
-// What the categories look like on the home page
 export type Category = {
   slug: string;
   name: string;
-  tagline: string;
-  colors: [string, string];
+  tagline: string; // shown under the tray on hover and on the category page
+  colors: [string, string]; // icon gradient
   icon: IconKey;
 };
 
-// What the actual apps look like inside a category
-export type AppItem = {
+export type AppEntry = {
   name: string;
-  href: string;
-  logo?: string;
+  href: string; // where the tile links to (opens in a new tab)
+  logo?: string; // e.g. "/logos/myapp.png"; falls back to the icon below
   colors: [string, string];
   icon: IconKey;
 };
 
 export const categories: Category[] = [
-  { slug: "web", name: "Web", tagline: "Websites and web apps.", colors: ["#7C5CFF", "#4B8BFF"], icon: "web" },
-  { slug: "mobile", name: "Mobile", tagline: "iOS and Android apps.", colors: ["#FF5C8A", "#FF8E5C"], icon: "mobile" },
-  { slug: "design", name: "Design", tagline: "Interfaces and branding.", colors: ["#FFC857", "#FF9F43"], icon: "design" },
-  { slug: "cloud", name: "Cloud", tagline: "Backends and APIs.", colors: ["#2EE6D6", "#20A4F3"], icon: "cloud" },
-  { slug: "ai", name: "AI", tagline: "Smart tools and automation.", colors: ["#B07CFF", "#FF5C8A"], icon: "ai" },
-  { slug: "care", name: "Care", tagline: "Maintenance and support.", colors: ["#3DDC97", "#2EE6D6"], icon: "care" },
+  { slug: "web", name: "Web", tagline: "Websites and web apps we've built.", colors: ["#7C5CFF", "#4B8BFF"], icon: "web" },
+  { slug: "mobile", name: "Mobile", tagline: "Apps for iPhone and Android.", colors: ["#FF5C8A", "#FF8E5C"], icon: "mobile" },
+  { slug: "design", name: "Design", tagline: "Interfaces, brands and visuals.", colors: ["#FFC857", "#FF9F43"], icon: "design" },
+  { slug: "cloud", name: "Cloud", tagline: "Backends, APIs and infrastructure.", colors: ["#2EE6D6", "#20A4F3"], icon: "cloud" },
+  { slug: "ai", name: "AI", tagline: "Experiments and tools powered by AI.", colors: ["#B07CFF", "#FF5C8A"], icon: "ai" },
+  { slug: "care", name: "Care", tagline: "Tools that keep things running.", colors: ["#3DDC97", "#2EE6D6"], icon: "care" },
 ];
 
-// Put your actual apps in here, mapped to the category slug
-export const appsByCategory: Record<string, AppItem[]> = {
-  web: [   { name: "App for test", href: "https://github.com", colors: ["#010005", "#e7e7e7"], icon: "web" },
-    // Example: { name: "My Site", href: "https://example.com", colors: ["#000", "#333"], icon: "web" }
-  ],
+export const appsByCategory: Record<string, AppEntry[]> = {
+  web: [],
   mobile: [],
   design: [],
   cloud: [],
