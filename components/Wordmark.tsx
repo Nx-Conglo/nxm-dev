@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useMotionValue,
@@ -12,14 +12,42 @@ import {
 
 const ACCENTS = Array(6).fill("var(--accent-ink)"); // lime in dark, deep green in light
 
+// Each letter starts as a pixel "X" (the "encrypted" look from the reference video),
+// then its slot rolls like a reel and lands on the real letter.
+const FILLER = ["0", "1", "#", "$", "%", "&", "/", "@"];
+const REEL = 9; // 8 filler items + the real letter
+const ROLL_START = 0.7; // seconds before the first letter starts rolling
+const ROLL_STAGGER = 0.18; // seconds between letters
+const ROLL_TIME = 1.2; // seconds each roll takes
+
+function XGlyph() {
+  return (
+    <span className="x-glyph" aria-hidden="true">
+      {(
+        [
+          [1, 1],
+          [3, 1],
+          [2, 2],
+          [1, 3],
+          [3, 3],
+        ] as const
+      ).map(([c, r], i) => (
+        <i key={i} style={{ gridColumn: c, gridRow: r }} />
+      ))}
+    </span>
+  );
+}
+
 function Letter({
   char,
+  index,
   accent,
   mx,
   my,
   interactive,
 }: {
   char: string;
+  index: number;
   accent: string;
   mx: MotionValue<number>;
   my: MotionValue<number>;
@@ -27,6 +55,11 @@ function Letter({
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const near = useMotionValue(0); // 0 = far away, 1 = pointer is on the letter
+  const [rolled, setRolled] = useState(false);
+
+  useEffect(() => {
+    if (!interactive) setRolled(true); // reduced motion: show the letters right away
+  }, [interactive]);
 
   useEffect(() => {
     if (!interactive) return;
@@ -58,19 +91,38 @@ function Letter({
   return (
     <motion.span
       className="letter-wrap"
-      variants={{
-        hidden: { y: "55%", opacity: 0, filter: "blur(14px)" },
-        show: {
-          y: "0%",
-          opacity: 1,
-          filter: "blur(0px)",
-          transition: { type: "spring", stiffness: 140, damping: 16 },
-        },
-      }}
+      initial={interactive ? { opacity: 0 } : false}
+      animate={{ opacity: 1 }}
+      transition={{ delay: index * 0.06, duration: 0.3 }}
     >
-      <motion.span ref={ref} className="letter" style={interactive ? { y, scale, rotate, color } : undefined}>
-        {char}
-      </motion.span>
+      <span className={`slot${rolled ? "" : " rolling"}`}>
+        {/* the real letter: sets the slot width, stays hidden until the roll ends */}
+        <motion.span
+          ref={ref}
+          className={`letter${rolled ? "" : " pending"}`}
+          style={interactive ? { y, scale, rotate, color } : undefined}
+        >
+          {char}
+        </motion.span>
+
+        {!rolled && (
+          <motion.span
+            className="reel"
+            aria-hidden="true"
+            initial={{ y: "0%" }}
+            animate={{ y: `-${((REEL - 1) / REEL) * 100}%` }}
+            transition={{ delay: ROLL_START + index * ROLL_STAGGER, duration: ROLL_TIME, ease: [0.16, 1, 0.3, 1] }}
+            onAnimationComplete={() => setRolled(true)}
+          >
+            {Array.from({ length: REEL - 1 }, (_, k) => (
+              <span key={k} className="reel-item">
+                {k % 2 === 0 ? <XGlyph /> : FILLER[(index + k) % FILLER.length]}
+              </span>
+            ))}
+            <span className="reel-item final">{char}</span>
+          </motion.span>
+        )}
+      </span>
     </motion.span>
   );
 }
@@ -102,23 +154,25 @@ export default function Wordmark() {
   let i = 0;
 
   return (
-    <motion.h1
-      className="wordmark"
-      aria-label="NxM Dev"
-      initial={reduce ? "show" : "hidden"}
-      animate="show"
-      variants={{ show: { transition: { staggerChildren: 0.08, delayChildren: 0.15 } } }}
-    >
+    <h1 className="wordmark" aria-label="NxM Dev">
       {words.map((w) => (
         <span className="word" key={w} aria-hidden="true">
           {w.split("").map((c) => {
             const idx = i++;
             return (
-              <Letter key={idx} char={c} accent={ACCENTS[idx % ACCENTS.length]} mx={mx} my={my} interactive={!reduce} />
+              <Letter
+                key={idx}
+                char={c}
+                index={idx}
+                accent={ACCENTS[idx % ACCENTS.length]}
+                mx={mx}
+                my={my}
+                interactive={!reduce}
+              />
             );
           })}
         </span>
       ))}
-    </motion.h1>
+    </h1>
   );
 }
