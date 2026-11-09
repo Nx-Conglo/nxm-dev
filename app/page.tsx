@@ -10,7 +10,7 @@ export default function Home() {
       <SiteHeader home />
       <main className="hero">
         <Wordmark />
-        <Typewriter text={SITE.tagline} className="tagline" />
+        <Typewriter text={SITE.tagline} className="tagline" startDelay={2400} />
         <AppTray />
       </main>
     </>

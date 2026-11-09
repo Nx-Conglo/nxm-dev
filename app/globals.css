@@ -275,6 +275,7 @@ ul {
 }
 
 .tray-grid {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -480,6 +481,72 @@ ul {
 }
 .tw-rest {
   visibility: hidden;
+}
+
+/* ───────── Title: X → letter reel ───────── */
+.wordmark {
+  --slot-h: 1.1em;
+}
+.slot {
+  position: relative;
+  display: inline-block;
+  height: var(--slot-h);
+  line-height: var(--slot-h);
+}
+.slot.rolling {
+  overflow: hidden;
+}
+.letter {
+  height: var(--slot-h);
+  line-height: var(--slot-h);
+}
+.letter.pending {
+  visibility: hidden;
+}
+.reel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.reel-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--slot-h);
+  line-height: var(--slot-h);
+  color: var(--accent-ink);
+}
+.reel-item.final {
+  color: var(--fg);
+}
+.x-glyph {
+  display: grid;
+  grid-template-columns: repeat(3, 0.17em);
+  grid-template-rows: repeat(3, 0.17em);
+}
+.x-glyph i {
+  display: block;
+  background: currentColor;
+  box-shadow: 0 0 0.14em currentColor;
+}
+
+/* ───────── Encrypted module tiles ───────── */
+.tile-inner {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+.tile-ascii {
+  color: inherit;
+  font-size: 0.6rem;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  white-space: pre;
+  opacity: 0.85;
 }
 
 /* ───────── Small screens ───────── */
